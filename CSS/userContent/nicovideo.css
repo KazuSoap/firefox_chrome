@@ -1,0 +1,19 @@
+@charset "utf-8";
+/*----------------------------------------------------------------------------*/
+/*
+/*nicovideo
+/*
+/*----------------------------------------------------------------------------*/
+@-moz-document domain("nicovideo.jp") {
+  .nicoSpotAds { display: none !important; }
+}
+/*
+@-moz-document domain("nicovideo.jp") {
+  .hogehoge:nth-of-type(2) > tbody > tr > hoge:nth-of-type(2)
+}
+@-moz-document url-prefix("http://www.nicovideo.jp/ranking") {
+}
+@-moz-document url-prefix("http://www.nicovideo.jp/watch/") {
+#leftPanel  { display: none !important; }
+#commentDefault.commentTable  { bottom: 8px !important; }
+}*/

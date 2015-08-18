@@ -1,0 +1,16 @@
+@charset "utf-8";
+/*----------------------------------------------------------------------------*/
+/*
+/*2ch
+/*
+/*----------------------------------------------------------------------------*/
+
+@-moz-document domain("2ch.net") {
+    body {
+	font-family: IPAMonaPGothic !important;
+	font-size: 16px !important;
+	line-height: 18px !important;
+    }
+
+    .js--ad--top, .ad--right { display: none !important; }
+}

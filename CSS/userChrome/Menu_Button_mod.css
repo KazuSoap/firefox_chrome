@@ -1,0 +1,27 @@
+@charset "utf-8";
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+@-moz-document url(chrome://browser/content/browser.xul){
+/*----------------------------------------------------------------------------*/
+/*
+/* Menu_Button_mod
+/*
+/*----------------------------------------------------------------------------*/
+#TabsToolbar #appmenu-button { padding:3px 0px 2px 0px !important; }
+
+#main-window[sizemode="normal"]
+#TabsToolbar #appmenu-container { margin:0 1px 0 -2px !important; }
+
+#appmenu-button :-moz-any(.toolbarbutton-icon,.toolbarbutton-menu-dropmarker)
+{ padding:0 !important; }
+
+#appmenu-button .toolbarbutton-icon { margin:0 2px 0 2px !important; }
+
+#appmenu-button .toolbarbutton-menu-dropmarker { margin:3px 4px 0 0 !important; }
+
+#main-window:-moz-any([sizemode="maximized"],[inFullscreen]) #TabsToolbar #appmenu-container,
+#main-window[privateTab-selectedTabIsPrivate=true] #appmenu-button .toolbarbutton-icon
+{ margin:0 !important; }
+
+/*----------------------------------------------------------------------------*/
+}
