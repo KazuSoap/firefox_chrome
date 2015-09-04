@@ -12,5 +12,5 @@
 	line-height: 18px !important;
     }
 
-    .js--ad--top, .ad--right { display: none !important; }
+    .js--ad--top, .ad--right, .js--ad--bottom { display: none !important; }
 }
