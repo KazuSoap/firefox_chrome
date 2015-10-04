@@ -12,7 +12,7 @@
     #urlbar > .autocomplete-history-dropmarker{ -moz-box-ordinal-group: 3;}
 
     #urlbar > toolbarbutton{
-        margin: -3px 0 !important;
+        margin: 0 !important;
         padding: 0 4px 0 5px !important;
         border-left: none !important;
         border-right: 1px solid rgba(0,0,0,.35) !important;
