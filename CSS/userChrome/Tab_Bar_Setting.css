@@ -31,7 +31,8 @@
 .tabbrowser-tab:not([pinned]):-moz-any(:hover,[selected])/* onマウス or 選択 */
 { max-width:160px !important; min-width:100px !important; }
 .tabbrowser-tab:not([pinned]):not(:hover):not([selected])/* その他 */
-{ max-width: 32px !important; min-width: 32px !important; }
+/* { max-width: 32px !important; min-width: 32px !important; } */
+{ max-width: 50px !important; min-width: 50px !important; }
 /* 新規タブを開く */
 .tabs-newtab-button { max-width:18px !important; min-width:18px !important; }
 
