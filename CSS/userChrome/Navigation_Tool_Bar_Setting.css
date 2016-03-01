@@ -18,8 +18,11 @@
         border-right: 1px solid rgba(0,0,0,.35) !important;
     }
 
-    #forward-button[occluded-by-urlbar] ~ #urlbar-wrapper > #urlbar > toolbarbutton
+    #forward-button[disabled="true"] + #urlbar > toolbarbutton
     { padding: 0 4px 0 9px !important; }
+
+    #forward-button[disabled="true"] + #urlbar #identity-box
+    { padding: 0 5px 0 5px !important; }
 
     #urlbar > toolbarbutton:active:hover{
         box-shadow: 1px  1px   0   rgba(  0,  0,  0,.1) inset,

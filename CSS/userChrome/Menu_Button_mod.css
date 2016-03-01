@@ -9,8 +9,8 @@
 /*----------------------------------------------------------------------------*/
 #TabsToolbar #appmenu-button { padding:3px 0px 2px 0px !important; }
 
-#main-window[sizemode="normal"]
-#TabsToolbar #appmenu-container { margin:0 1px 0 -2px !important; }
+#main-window[sizemode="normal"] #TabsToolbar #appmenu-container { margin:0px 2px 0 -1px !important; }
+#main-window[sizemode="maximized"] #TabsToolbar #appmenu-container { margin:0 1px 0 0 !important; }
 
 #appmenu-button :-moz-any(.toolbarbutton-icon,.toolbarbutton-menu-dropmarker)
 { padding:0 !important; }
@@ -19,7 +19,7 @@
 
 #appmenu-button .toolbarbutton-menu-dropmarker { margin:3px 4px 0 0 !important; }
 
-#main-window:-moz-any([sizemode="maximized"],[inFullscreen]) #TabsToolbar #appmenu-container,
+#main-window[inFullscreen] #TabsToolbar #appmenu-container,
 #main-window[privateTab-selectedTabIsPrivate=true] #appmenu-button .toolbarbutton-icon
 { margin:0 !important; }
 

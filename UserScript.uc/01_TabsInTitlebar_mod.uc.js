@@ -51,7 +51,7 @@
 
     addStyle(css)
 
-    document.documentElement.setAttribute('chromemargin', '0,0,0,0');
+    //document.documentElement.setAttribute('chromemargin', '0,0,0,0');
 
     //	setTimeout(function(){ TabsInTitlebar._update(); }, 0);
     TabsInTitlebar._update();
@@ -73,15 +73,10 @@
 #main-window[tabsintitlebar] #toolbar-menubar > .titlebar-placeholder {\
   display: none;\
 }\
-#main-window[title="Firefox - タブグループ"] #titlebar-buttonbox-container\
-{\
+#main-window[title="Firefox - タブグループ"] #titlebar-buttonbox-container {\
   visibility: hidden !important;\
 }\
 /*-- Hide Caption 用設定 --*/\
-#main-window[sizemode="normal"] {\
-    border:1px solid #778899 !important;\
-    border-top:none !important;\
-}\
 #main-window[sizemode="normal"] #tab-view-deck {\
     margin-top:0px !important;\
 }\
