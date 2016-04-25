@@ -4,9 +4,9 @@
 // @charset        UTF-8
 // @description    ツールバーに"再起動ボタン"を追加する
 // @include        main
-// @compatibility  Firefox 18
-// @author         Alice0775
-// @version        2012.2.14
+// @compatibility  Firefox 45
+// @author         Kazu.Soap
+// @version        2016.4.25
 // ==/UserScript==
 (function()
 {
@@ -25,46 +25,18 @@
 	toolbarbutton, document.getElementById("TabsToolbar").lastChild.nextSibling
     );
 
-//restartApp find here:
-//  - chrome://mozapps/content/extensions/extensions.js
-//  - %FirefoxApplicationDir%/chrome/toolkit.jar/content/mozapps/extensions/extensions.js
-function restartApp(clearCache) {
-    if (typeof clearCache == 'undefined')
-	clearCache = false;
+    //restartApp find here:
+    //  - chrome://mozapps/content/extensions/extensions.js
+    function restartApp(clearCache) {
+        let cancelQuit = Cc["@mozilla.org/supports-PRBool;1"].
+            createInstance(Ci.nsISupportsPRBool);
+        Services.obs.notifyObservers(cancelQuit, "quit-application-requested",
+                                     "restart");
+        if (cancelQuit.data)
+            return; // somebody canceled our quit request
 
-    const appStartup = Components.classes["@mozilla.org/toolkit/app-startup;1"]
-	.getService(Components.interfaces.nsIAppStartup);
-
-    // Notify all windows that an application quit has been requested.
-    var os = Components.classes["@mozilla.org/observer-service;1"]
-        .getService(Components.interfaces.nsIObserverService);
-    var cancelQuit = Components.classes["@mozilla.org/supports-PRBool;1"]
-        .createInstance(Components.interfaces.nsISupportsPRBool);
-    os.notifyObservers(cancelQuit, "quit-application-requested", null);
-
-    // Something aborted the quit process.
-    if (cancelQuit.data)
-	return;
-
-    // Notify all windows that an application quit has been granted.
-    os.notifyObservers(null, "quit-application-granted", null);
-
-    // Enumerate all windows and call shutdown handlers
-    var wm = Components.classes["@mozilla.org/appshell/window-mediator;1"]
-        .getService(Components.interfaces.nsIWindowMediator);
-    var windows = wm.getEnumerator(null);
-    var win;
-    while (windows.hasMoreElements()) {
-	win = windows.getNext();
-	if (("tryToClose" in win) && !win.tryToClose())
-            return;
+        let appStartup = Cc["@mozilla.org/toolkit/app-startup;1"].
+            getService(Ci.nsIAppStartup);
+        appStartup.quit(Ci.nsIAppStartup.eAttemptQuit |  Ci.nsIAppStartup.eRestart);
     }
-
-    if (clearCache) {
-	let XRE = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULRuntime);
-	XRE.invalidateCachesOnRestart();
-    }
-    appStartup.quit(appStartup.eRestart | appStartup.eAttemptQuit);
-}
-
 })();
