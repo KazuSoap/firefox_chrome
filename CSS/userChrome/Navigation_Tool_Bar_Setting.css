@@ -1,17 +1,26 @@
 @charset "utf-8";
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
+/*----------------------------------------------------------------------------*/
+/*
+/* Navigation_Tool_Bar_Setting
+/*
+/*----------------------------------------------------------------------------*/
 @-moz-document url(chrome://browser/content/browser.xul){
-    /*----------------------------------------------------------------------------*/
-    /*
-    /* Navigation_Tool_Bar_Setting
-    /*
-    /*----------------------------------------------------------------------------*/
-    /* -------------------- < 再読み込みボタンの左側表示 > -------------------- */
-    #urlbar > .autocomplete-textbox-container { -moz-box-ordinal-group: 2;}
-    #urlbar > .autocomplete-history-dropmarker{ -moz-box-ordinal-group: 3;}
 
-    #urlbar > toolbarbutton{
+    /* -------------------- < 再読み込みボタンの左側表示 > -------------------- */
+    #urlbar > .autocomplete-textbox-container
+    {
+        -moz-box-ordinal-group: 2;
+    }
+
+    #urlbar > .autocomplete-history-dropmarker
+    {
+        -moz-box-ordinal-group: 3;
+    }
+
+    #urlbar > toolbarbutton
+    {
         margin: 0 !important;
         padding: 0 4px 0 5px !important;
         border-left: none !important;
@@ -19,41 +28,65 @@
     }
 
     #forward-button[disabled="true"] + #urlbar > toolbarbutton
-    { padding: 0 4px 0 9px !important; }
+    {
+        padding: 0 4px 0 9px !important;
+    }
 
     #forward-button[disabled="true"] + #urlbar #identity-box
-    { padding: 0 5px 0 5px !important; }
+    {
+        padding: 0 5px 0 5px !important;
+    }
 
-    #urlbar > toolbarbutton:active:hover{
-        box-shadow: 1px  1px   0   rgba(  0,  0,  0,.1) inset,
-        -1px -1px   0   rgba(255,255,255,.2) inset,
-        0    0   6.5px rgba(  0,  0,  0,.4) inset,
-        0    0     2px rgba(  0,  0,  0,.4) inset !important;
+    #urlbar > toolbarbutton:active:hover
+    {
+        box-shadow: 1px  1px   0   rgba(  0,  0,  0,.1) inset
+        ,          -1px -1px   0   rgba(255,255,255,.2) inset
+        ,           0    0   6.5px rgba(  0,  0,  0,.4) inset
+        ,           0    0     2px rgba(  0,  0,  0,.4) inset !important;
     }
 
     /* -------------------- < Australis_Small_Icons > -------------------- */
-    #nav-bar{
-        margin-top:-2px !important; margin-right:-1px !important; padding:0 2px !important;
+    #nav-bar
+    {
+        margin-top:-2px !important;
+        margin-right:-1px !important;
+        padding:0 2px !important;
     }
-    #main-window[sizemode="maximized"] #nav-bar{ margin-top:-1px !important; }
+
+    #main-window[sizemode="maximized"] #nav-bar
+    {
+        margin-top:-1px !important;
+    }
 
     #nav-bar .toolbarbutton-1:not(:-moz-any(#back-button, #forward-button))
-                                 { margin-top: -6px !important; margin-bottom: -6px !important }
-
-    /* #nav-bar #back-button .toolbarbutton-icon */
-    /* { padding: -1px !important } */
+    {
+        margin-top: -6px !important;
+        margin-bottom: -6px !important
+    }
 
     #nav-bar #back-button
-    { margin-left: 1px !important; margin-bottom: -3px !important; margin-top: -3px !important}
+    {
+        margin-top: -3px !important;
+        margin-bottom: -3px !important;
+        margin-left: 1px !important;
+    }
 
     #navigator-toolbox[iconsize=large] #back-button
-    { margin-right: -1px !important; }
+    {
+        margin-right: -1px !important;
+    }
 
     #nav-bar .toolbarbutton-1:not(#back-button):not(#forward-button)
-                                                   {padding-left: 1px !important; padding-right: 1px !important }
+    {
+        padding-left: 1px !important;
+        padding-right: 1px !important
+    }
 
     #nav-bar .toolbarbutton-1:-moz-any(#back-button, #forward-button)
-                                      { padding-left: 0px !important; padding-right: 0px !important }
+    {
+        padding-left: 0px !important;
+        padding-right: 0px !important
+    }
 
     /*Reduce horizontal padding of buttons icons*/
     #nav-bar .toolbarbutton-1:not([type=menu]):not(#back-button):not(#forward-button) > .toolbarbutton-icon,
@@ -61,22 +94,53 @@
     #nav-bar #feed-button > .toolbarbutton-icon,
     #nav-bar #bookmarks-menu-button > .toolbarbutton-menubutton-button > .toolbarbutton-icon,
     #nav-bar #bookmarks-menu-button > .toolbarbutton-menubutton-dropmarker > .dropmarker-icon
-             { padding-left: 2px !important; padding-right: 2px !important }
+    {
+        padding-left: 2px !important;
+        padding-right: 2px !important
+    }
 
-    #urlbar-search-splitter{ padding: 0 !important; margin: 0 -3.5px !important}
+    #urlbar-search-splitter
+    {
+        padding: 0 !important;
+        margin: 0 -3.5px !important
+    }
 
     /* -------------------- < other tips > -------------------- */
-    #nav-bar-customization-target { margin:0 !important; }
+    #nav-bar-customization-target
+    {
+        margin:0 !important;
+    }
 
     /* 非表示系 */
     #urlbar dropmarker/*履歴プルダウン▼*/
-            { display:none !important; }
+    {
+        display:none !important;
+    }
+
     /* URLバー関連 */
-    #urlbar { font-size:8pt !important;}
-    #urlbar *|input { ime-mode: inactive !important; }/* URLバーにフォーカス時IMEオフ */
+    #urlbar
+    {
+        font-size:8pt !important;
+    }
+
+    /* URLバーにフォーカス時IMEオフ */
+    #urlbar *|input
+    {
+        ime-mode: inactive !important;
+    }
+
     /* 検索バー関連 */
-    .searchbar-textbox { margin-right: 1px !important; font-size:8pt !important; }
-    #searchbar *|input {ime-mode: active !important;}/* 検索バーにフォーカス時IMEをオン */
+    .searchbar-textbox
+    {
+        margin-right: 1px !important;
+        font-size:8pt !important;
+    }
+
+    /* 検索バーにフォーカス時IMEをオン */
+    #searchbar *|input
+    {
+        ime-mode: active !important;
+    }
 
     /*----------------------------------------------------------------------------*/
 }

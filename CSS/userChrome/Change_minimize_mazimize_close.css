@@ -1,39 +1,39 @@
 @charset "utf-8";
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
-@-moz-document url(chrome://browser/content/browser.xul){
 /*----------------------------------------------------------------------------*/
 /*
 /* Change minimize mazimize close
 /*
 /*----------------------------------------------------------------------------*/
-/* -------------------- < margin > -------------------- */
-#main-window[sizemode="normal"] #titlebar-buttonbox-container { margin:0 0 8px 2px !important; }
-#main-window[sizemode="maximized"] #titlebar-buttonbox-container { margin:0 0 8px 2px !important; }
+@-moz-document url(chrome://browser/content/browser.xul){
 
-/* -------------------- < button > -------------------- */
+    /* -------------------- < button > -------------------- */
 
-/* 基本設定 */
-#main-window:not([inFullscreen]) :-moz-any(#titlebar-min,#titlebar-max,#titlebar-close){
-    margin:0 !important; padding:1px 0 0 4px !important;
-    max-height:16px !important; min-height:16px !important;
-    max-width:21px !important; min-width:21px !important;
-    border:1px solid hsla(211,34%,23%,.50) !important;
-    border-top:none !important; border-right:none !important;
-}
+    /* 基本設定 */
+    #main-window:not([inFullscreen]) :-moz-any(#titlebar-min,#titlebar-max,#titlebar-close)
+    {
+        margin:0 !important; padding:1px 0 0 4px !important;
+        max-height:16px !important; min-height:16px !important;
+        max-width:21px !important; min-width:21px !important;
+        border:1px solid hsla(211,34%,23%,.50) !important;
+        border-top:none !important; border-right:none !important;
+    }
 
-#main-window:not([inFullscreen]) #titlebar-min {/* 最小化 */
-    border-radius:0 0 0 3.5px !important;
-}
+    #main-window:not([inFullscreen]) #titlebar-min /* 最小化 */
+    {
+        border-radius:0 0 0 3.5px !important;
+    }
 
-#main-window:not([inFullscreen]) #titlebar-close {/* 閉じる */
-    background-color:#b23636 !important;
-}
+    #main-window:not([inFullscreen]) #titlebar-close /* 閉じる */
+    {
+        background-color:#b23636 !important;
+    }
 
-/* クリック */
-#main-window:not([inFullscreen]) #titlebar-close:active {
-    background-color: #a51e1e !important;
-}
+    #main-window:not([inFullscreen]) #titlebar-close:active /* クリック */
+    {
+        background-color: #a51e1e !important;
+    }
 
-/*----------------------------------------------------------------------------*/
+    /*----------------------------------------------------------------------------*/
 }
