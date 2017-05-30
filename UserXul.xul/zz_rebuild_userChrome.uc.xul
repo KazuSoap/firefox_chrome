@@ -99,7 +99,7 @@
                         .getService(Ci.nsIDragService);
       var dragSession = dragService.getCurrentSession();
       var supportedTypes = ["text/x-moz-url", "text/unicode", "application/x-moz-file"];
-      for each (var type in supportedTypes) {
+      for (var type of supportedTypes) {
         if (event.dataTransfer.types.contains(type)) {
           var data = event.dataTransfer.getData(type);
           var url = (/^\s*(.*?)\s*$/m.test(data))
@@ -118,7 +118,7 @@
                         .getService(Ci.nsIDragService);
       var dragSession = dragService.getCurrentSession();
       var supportedTypes = ["text/x-moz-url", "text/unicode", "application/x-moz-file"];
-      for each (var type in supportedTypes) {
+      for (var type of supportedTypes) {
         if (event.dataTransfer.types.contains(type)) {
           var data = event.dataTransfer.getData(type);
           this.dndObserver.onDrop(event, {data: data}, dragSession);
@@ -646,11 +646,12 @@
                   oncommand='new Components.Constructor("@mozilla.org/file/local;1","nsILocalFile", "initWithPath")(Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("UChrm", Components.interfaces.nsIFile).path).reveal();'/>
       </menupopup>
     </menu>
-
-    <menu id="userChromejs_script_options_Menu" label="userChrome.jsの各スクリプトの設定" accesskey="s"
-          insertbefore="menu_preferences" >
-      <menupopup id="userChromejs_script_options" />
-    </menu>
+    <!--
+        <menu id="userChromejs_script_options_Menu" label="userChrome.jsの各スクリプトの設定" accesskey="s"
+        insertbefore="menu_preferences" >
+        <menupopup id="userChromejs_script_options" />
+        </menu>
+    -->
   </menupopup>
 
   <menupopup id="taskPopup">
