@@ -11,7 +11,7 @@
     /* -------------------- < button > -------------------- */
 
     /* 基本設定 */
-    #main-window:not([inFullscreen]) :-moz-any(#titlebar-min,#titlebar-max,#titlebar-close)
+    :-moz-any(#titlebar-min,#titlebar-max,#titlebar-close)
     {
         margin:0 !important; padding:1px 0 0 4px !important;
         max-height:16px !important; min-height:16px !important;
@@ -20,17 +20,17 @@
         border-top:none !important; border-right:none !important;
     }
 
-    #main-window:not([inFullscreen]) #titlebar-min /* 最小化 */
+    #titlebar-min /* 最小化 */
     {
         border-radius:0 0 0 3.5px !important;
     }
 
-    #main-window:not([inFullscreen]) #titlebar-close /* 閉じる */
+    #titlebar-close /* 閉じる */
     {
         background-color:#b23636 !important;
     }
 
-    #main-window:not([inFullscreen]) #titlebar-close:active /* クリック */
+    #titlebar-close:active /* クリック */
     {
         background-color: #a51e1e !important;
     }
