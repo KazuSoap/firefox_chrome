@@ -5,12 +5,16 @@
 /*
 /*----------------------------------------------------------------------------*/
 
-@-moz-document domain("2ch.net") {
+/* @document */
+/* /\* domain("2ch.net") *\/ */
+/* url-prefix("http://potato.2ch.net/") */
+/* { */
     body {
-	font-family: IPAMonaPGothic !important;
-	font-size: 16px !important;
-	line-height: 18px !important;
+        /* font-family: IPMonaPGothic !important; */
+        font-family: MSGothic !important;
+        font-size: 16px !important;
+        line-height: 18px !important;
     }
 
     .js--ad--top, .ad--right, .js--ad--bottom { display: none !important; }
-}
+/* } */

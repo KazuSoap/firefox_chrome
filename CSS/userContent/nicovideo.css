@@ -4,7 +4,7 @@
 /*nicovideo
 /*
 /*----------------------------------------------------------------------------*/
-@-moz-document domain("nicovideo.jp") {
+@document domain("nicovideo.jp") {
   .nicoSpotAds { display: none !important; }
 }
 /*
