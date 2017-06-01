@@ -9,31 +9,22 @@
 @-moz-document url(chrome://browser/content/browser.xul){
 
     /* -------------------- < margin > -------------------- */
-    #main-window[sizemode="normal"] #tabbrowser-tabs
-    {
-        margin-left:-15px !important;
-    }
-
-    #main-window[sizemode="maximized"] #tabbrowser-tabs
-    {
-        margin-left:-15px !important;
-    }
-
-    #main-window[inFullscreen] #tabbrowser-tabs
-    {
-        margin-left:-14px !important;
-    }
-
     #main-window[tabsintitlebar][sizemode="normal"] #tab-view-deck
     {
         margin-top:-5px !important;
     }
 
-    #main-window[tabsintitlebar][sizemode="normal"] #toolbar-menubar {
+    #main-window[tabsintitlebar][sizemode="normal"] #toolbar-menubar
+    {
         margin-top:5px !important;
     }
 
-    #toolbar-menubar + #TabsToolbar
+    #tabbrowser-tabs .arrowscrollbox-scrollbox
+    {
+        padding:0 !important;
+    }
+
+    #TabsToolbar
     {
         margin:0 !important;
     }
@@ -67,8 +58,8 @@
     /* ピン留め */
     .tabbrowser-tab[pinned] .tab-stack
     {
-        max-width: 22px !important;
-        min-width: 22px !important;
+        max-width:22px !important;
+        min-width:22px !important;
     }
 
     /* 非ピン留め */
@@ -80,8 +71,8 @@
 
     .tabbrowser-tab:not([pinned]):not(:hover):not([selected])/* その他 */
     {
-        max-width: 50px !important;
-        min-width: 50px !important;
+        max-width:50px !important;
+        min-width:50px !important;
     }
 
     /* 新規タブを開く */
@@ -94,13 +85,13 @@
     /* close-button の非表示*/
     .tab-close-button[anonid="close-button"]
     {
-        display:none;
+        display:none !important;
     }
 
     /* 未読タブを半透明 */
     .tabbrowser-tab[pending]
     {
-        opacity: .6 !important;
+        opacity:.6 !important;
     }
 
     /* タブテキスト */
