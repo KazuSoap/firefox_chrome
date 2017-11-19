@@ -10,15 +10,26 @@
 
     /* -------------------- < button > -------------------- */
 
-    /* 基本設定 */
+    基本設定
     :-moz-any(#titlebar-min,#titlebar-max,#titlebar-close)
     {
-        margin:0 !important; padding:1px 0 0 4px !important;
+        /* margin:0 !important; padding:1px 0 0 4px !important; */
         max-height:16px !important; min-height:16px !important;
         max-width:21px !important; min-width:21px !important;
         border:1px solid hsla(211,34%,23%,.50) !important;
         border-top:none !important; border-right:none !important;
     }
+
+    /* #main-window[sizemode="maximized"] :-moz-any(#titlebar-min,#titlebar-max,#titlebar-close) */
+    /* { */
+    /*     margin-bottom:13px !important; */
+    /* } */
+
+        /* #main-window[sizemode="maximized"] #nav-bar */
+    /* { */
+    /*     margin-top:-1px !important; */
+    /* } */
+
 
     #titlebar-min /* 最小化 */
     {

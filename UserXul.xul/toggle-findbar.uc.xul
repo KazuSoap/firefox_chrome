@@ -14,7 +14,11 @@ var ucjsToggleFindBar = function() {
 }
 ]]></script>
 <window id="main-window">
-  <keyset id="mainKeyset"><key id="key_find" oncommand="ucjsToggleFindBar()" /></keyset>
-  <commandset id="mainCommandSet"><command id="cmd_find" oncommand="ucjsToggleFindBar()" /></commandset>
+  <keyset id="mainKeyset">
+    <key id="key_find" oncommand="ucjsToggleFindBar()" />
+  </keyset>
+  <commandset id="mainCommandSet">
+    <command id="cmd_find" oncommand="ucjsToggleFindBar()" />
+  </commandset>
 </window>
 </overlay>

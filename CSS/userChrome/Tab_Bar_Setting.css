@@ -9,115 +9,125 @@
 @-moz-document url(chrome://browser/content/browser.xul){
 
     /* -------------------- < margin > -------------------- */
-    #main-window[tabsintitlebar][sizemode="normal"] #tab-view-deck
-    {
-        margin-top:-5px !important;
-    }
+    /* #main-window[tabsintitlebar][sizemode="normal"] #tab-view-deck */
+    /* { */
+    /*     margin-top:-5px !important; */
+    /* } */
 
-    #main-window[tabsintitlebar][sizemode="normal"] #toolbar-menubar
-    {
-        margin-top:5px !important;
-    }
+    /* #main-window[tabsintitlebar][sizemode="normal"] #toolbar-menubar */
+    /* { */
+    /*     margin-top:5px !important; */
+    /* } */
 
-    #tabbrowser-tabs .arrowscrollbox-scrollbox
-    {
-        padding:0 !important;
-    }
+    /* #tabbrowser-tabs .arrowscrollbox-scrollbox */
+    /* { */
+    /*     padding:0 !important; */
+    /* } */
 
-    #TabsToolbar
-    {
-        margin:0 !important;
-    }
+    /* #TabsToolbar */
+    /* { */
+    /*     margin:0 !important; */
+    /* } */
 
-    #main-window[tabsintitlebar]:not([inFullscreen]) #toolbar-menubar[autohide="true"] + #TabsToolbar
-    {
-        margin-right:-85px !important;
-    }
+    /* #main-window[tabsintitlebar]:not([inFullscreen]) #toolbar-menubar[autohide="true"] + #TabsToolbar */
+    /* { */
+    /*     margin-right:-103px !important; */
+    /* } */
 
-    #main-window[tabsintitlebar]:not([inFullscreen]) #toolbar-menubar[autohide="true"][inactive="true"] + #TabsToolbar
-    {
-        margin-right:-20px !important;
-    }
+    /* #main-window[tabsintitlebar]:not([inFullscreen]) #toolbar-menubar[autohide="true"][inactive="true"] + #TabsToolbar */
+    /* { */
+    /*     margin-right:-38px !important; */
+    /* } */
+
+    /* #main-window[tabsintitlebar][sizemode="normal"] #TabsToolbar */
+    /* { */
+    /*     margin-left:-40px !important; */
+    /* } */
 
     /* -------------------- < タブ高 > -------------------- */
     /* ピン留め */
-    .tabbrowser-tab:not([pinned]) .tab-background
-    {
-        max-height:28px !important;
-        min-height:28px !important;
-    }
+    /* .tabbrowser-tab:not([pinned]) .tab-background */
+    /* { */
+    /*     max-height:28px !important; */
+    /*     min-height:28px !important; */
+    /* } */
 
     /* 非ピン留め */
-    .tabbrowser-tab[pinned] .tab-background
-    {
-        max-height:27px !important;
-        min-height:27px !important;
-    }
+    /* .tabbrowser-tab[pinned] .tab-background */
+    /* { */
+    /*     max-height:27px !important; */
+    /*     min-height:27px !important; */
+    /* } */
 
     /* -------------------- < タブ幅 > -------------------- */
     /* ピン留め */
-    .tabbrowser-tab[pinned] .tab-stack
-    {
-        max-width:22px !important;
-        min-width:22px !important;
-    }
+    /* .tabbrowser-tab[pinned] .tab-stack */
+    /* { */
+    /*     max-width:22px !important; */
+    /*     min-width:22px !important; */
+    /* } */
 
     /* 非ピン留め */
-    .tabbrowser-tab:not([pinned]):-moz-any(:hover,[selected])/* onマウス or 選択 */
-    {
-        max-width:160px !important;
-        min-width:100px !important;
-    }
+    /* .tabbrowser-tab:not([pinned]):-moz-any(:hover,[selected])/\* onマウス or 選択 *\/ */
+    /* { */
+    /*     max-width:160px !important; */
+    /*     min-width:100px !important; */
+    /* } */
 
-    .tabbrowser-tab:not([pinned]):not(:hover):not([selected])/* その他 */
-    {
-        max-width:50px !important;
-        min-width:50px !important;
-    }
+    /* .tabbrowser-tab:not([pinned]):not(:hover):not([selected])/\* その他 *\/ */
+    /* { */
+    /*     max-width:50px !important; */
+    /*     min-width:50px !important; */
+    /* } */
 
     /* 新規タブを開く */
-    .tabs-newtab-button {
-        max-width:18px !important;
-        min-width:18px !important;
-    }
+    /* .tabs-newtab-button { */
+    /*     max-width:18px !important; */
+    /*     min-width:18px !important; */
+    /* } */
 
     /* -------------------- < other tips > -------------------- */
     /* close-button の非表示*/
-    .tab-close-button[anonid="close-button"]
-    {
-        display:none !important;
-    }
+    /* .tab-close-button[anonid="close-button"] */
+    /* { */
+    /*     display:none !important; */
+    /* } */
 
     /* 未読タブを半透明 */
-    .tabbrowser-tab[pending]
-    {
-        opacity:.6 !important;
-    }
+    /* .tabbrowser-tab[pending] */
+    /* { */
+    /*     opacity:.6 !important; */
+    /* } */
 
     /* タブテキスト */
-    .tab-text
-    {
-        /*font-family:ぷちくまふぉんと等幅3 !important; font-size:12px !important;*/
-        margin:0 !important;
-        padding:0 0 0 1px !important;
-    }
+    /* .tab-text */
+    /* { */
+    /*     /\*font-family:ぷちくまふぉんと等幅3 !important; font-size:12px !important;*\/ */
+    /*     margin:0 !important; */
+    /*     padding:0 0 0 1px !important; */
+    /* } */
     /* タブファビコン */
-    .tab-icon-image
-    {
-        max-height:16px !important;
-        max-width:16px !important;
-    }
+    /* .tab-icon-image */
+    /* { */
+    /*     max-height:16px !important; */
+    /*     max-width:16px !important; */
+    /* } */
 
-    .tabbrowser-tab:not([pinned]) :-moz-any(.tab-icon-image,.tab-throbber[progress],.tab-throbber[busy])
-    {
-        margin:-2px 0 -2px 0 !important;
-    }
+    /* .tabbrowser-tab:not([pinned]) :-moz-any(.tab-icon-image,.tab-throbber[progress],.tab-throbber[busy]) */
+    /* { */
+    /*     margin:-2px 0 -2px 0 !important; */
+    /* } */
 
-    .tabbrowser-tab[pinned] :-moz-any(.tab-icon-image,.tab-throbber[progress],.tab-throbber[busy])
-    {
-        margin:-2px 0 -2px -5px !important;
-    }
+    /* .tabbrowser-tab[pinned] :-moz-any(.tab-icon-image,.tab-throbber[progress],.tab-throbber[busy]) */
+    /* { */
+    /*     margin:-2px 0 -2px -5px !important; */
+    /* } */
 
+    /* Hide horizontal tabs at the top of the window */
+    /* #tabbrowser-tabs { */
+    #TabsToolbar {
+        visibility: collapse !important;
+    }
     /*----------------------------------------------------------------------------*/
 
 }
