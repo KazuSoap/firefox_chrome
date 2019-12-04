@@ -1,4 +1,4 @@
-/* :::::::: Sub-Script/Overlay Loader v3.0.48mod ::::::::::::::: */
+/* :::::::: Sub-Script/Overlay Loader v3.0.59mod no bind version ::::::::::::::: */
 
 // automatically includes all files ending in .uc.xul and .uc.js from the profile's chrome folder
 
@@ -14,6 +14,15 @@
 // 4.Support window.userChrome_js.loadOverlay(overlay [,observer]) //
 // Modified by Alice0775
 //
+// Date 2019/08/11 21:30 fix 70.0a1  Bug 1551344 - Remove XULDocument code
+// Date 2019/05/21 08:30 fix 69.0a1 Bug 1534407 - Enable browser.xhtml by default, Bug 1551320 - Replace all CreateElement calls in XUL documents with CreateXULElement
+// Date 2018/08/10 01:30 fix 63.0a1
+// Date 2018/08/02 19:30 for userChrome.xml
+// Date 2018/05/30 18:00 ALWAYSEXECUTE  .uc.js
+// Date 2018/05/06 22:00 fix wrong commit
+// Date 2018/05/06 22:00 remove workaround for editBookmarkPanel
+// Date 2018/03/21 08:00 revert USE_0_63_FOLDER
+// Date 2018/03/20 21:00 editBookmarkPanel etc Bug 1444228 - Remove editBookmarkOverlay.xul
 // Date 2015/06/28 13:00 about:preferences#privacy etc
 // Date 2014/12/28 19:00 workaround loading xul on second browser
 // Date 2014/12/13 21:00 remove a debug log
@@ -62,19 +71,19 @@
 (function(){
   "use strict";
   // -- config --
-  const EXPERIMENT = false; //実験:するtrue, しない[false]
   const EXCLUDE_CHROMEHIDDEN = false; //chromehiddenなwindow(popup等)ではロード: しないtrue, する[false]
   const USE_0_63_FOLDER = true; //0.63のフォルダ規則を使う[true], 使わないfalse
   const FORCESORTSCRIPT = false; //強制的にスクリプトをファイル名順でソートするtrue, しない[false]
   const AUTOREMOVEBOM   = false;  //BOMを自動的に, 取り除く:true, 取り除かない[false](元ファイルは.BOMとして残る)
-  const REPLACECACHE = false; //スクリプトの更新日付によりキャッシュを更新する: true , しない:[false]
+  const REPLACECACHE = true; //スクリプトの更新日付によりキャッシュを更新する: true , しない:[false]
   //=====================USE_0_63_FOLDER = falseの時===================
   var UCJS      = new Array("UCJSFiles","userContent","userMenu"); //UCJS Loader 仕様を適用 (NoScriptでfile:///を許可しておく)
   var arrSubdir = new Array("", "xul","TabMixPlus","withTabMixPlus", "SubScript", "UCJSFiles", "userCrome.js.0.8","userContent","userMenu");    //スクリプトはこの順番で実行される
   //===================================================================
-  const ALWAYSEXECUTE   = 'rebuild_userChrome.uc.xul'; //常に実行するスクリプト
+  const ALWAYSEXECUTE   = ['rebuild_userChrome.uc.xul', 'rebuild_userChrome.uc.js']; //常に実行するスクリプト
   var INFO = true;
-  var BROWSERCHROME = "chrome://browser/content/browser.xul"; //Firfox
+  var BROWSERCHROME = "chrome://browser/content/browser.xhtml"; //Firfox
+                    //"chrome://browser/content/browser.xul"; //Firfox
   //var BROWSERCHROME = "chrome://navigator/content/navigator.xul"; //SeaMonkey:
   // -- config --
 /* USE_0_63_FOLDER true の時
@@ -99,14 +108,13 @@
                         +-userCrome.js.0.8-+-*.uc.jsまたは*.uc.xul群 (綴りが変なのはなぜかって? )
  */
 
-
   //chrome/aboutでないならスキップ
   if(!/^(chrome:|about:)/i.test(location.href)) return;
   if(/^(about:(blank|newtab|home))/i.test(location.href)) return;
   //コモンダイアログに対するオーバーレイが今のところ無いので時間短縮のためスキップすることにした
   if(location.href =='chrome://global/content/commonDialog.xul') return;
   if(location.href =='chrome://global/content/alerts/alert.xul') return;
-  if(/.html?$/i.test(location.href)) return;
+  if(/\.html?$/i.test(location.href)) return;
   window.userChrome_js = {
     USE_0_63_FOLDER: USE_0_63_FOLDER,
     UCJS: UCJS,
@@ -118,21 +126,21 @@
     BROWSERCHROME: BROWSERCHROME,
     EXCLUDE_CHROMEHIDDEN: EXCLUDE_CHROMEHIDDEN,
     REPLACECACHE: REPLACECACHE,
-    EXPERIMENT: EXPERIMENT,
+
     get hackVersion () {
       delete this.hackVersion;
       return this.hackVersion = "0.8";
       //拡張のバージョン違いを吸収
-      // this.baseUrl = /^(chrome:\/\/\S+\/content\/)\S+/i.test( Error().fileName).$1;
-      // if (!/^(chrome:\/\/\S+\/content\/)\S+/i.test( Error().fileName) ){
-      // } else if (Error().fileName.indexOf("chrome://uc_js/content/uc_js.xul") > -1 ||
-      //      "chrome://userchrome_js_cache/content/userChrome.js" == Error().fileName ){  //0.8.0+ or 0.7
-      //   return this.hackVersion = "0.8+";
-      // } else if (Error().fileName.indexOf("chrome://browser/content/browser.xul -> ") == 0) {
-      //   return this.hackVersion = "0.8.1";
-      // } else {
-      //   return this.hackVersion = "0.8mod";
-      // }
+      this.baseUrl = /^(chrome:\/\/\S+\/content\/)\S+/i.test( Error().fileName).$1;
+      if (!/^(chrome:\/\/\S+\/content\/)\S+/i.test( Error().fileName) ){
+      } else if (Error().fileName.indexOf("chrome://uc_js/content/uc_js.xul") > -1 ||
+           "chrome://userchrome_js_cache/content/userChrome.js" == Error().fileName ){  //0.8.0+ or 0.7
+        return this.hackVersion = "0.8+";
+      } else if (Error().fileName.indexOf("chrome://browser/content/browser.xul -> ") == 0) {
+        return this.hackVersion = "0.8.1";
+      } else {
+        return this.hackVersion = "0.8mod";
+      }
     },
 
     //スクリプトデータを作成
@@ -202,7 +210,6 @@ var Start = new Date().getTime();
                               ,file);
               script.dir = dir;
               if(/\.uc\.js$/i.test(script.filename)){
-                script.url = convURL(script.url);
                 script.ucjs = checkUCJS(script.file.path);
                 s.push(script);
               }else{
@@ -220,21 +227,6 @@ var Start = new Date().getTime();
         [].push.apply(this.overlays, o);
       }
 this.debug('Parsing getScripts: '+((new Date()).getTime()-Start) +'msec');
-
-      //拡張のバージョン違いを吸収
-      function convURL(url){
-        switch (userChrome_js.hackVersion) {
-          case "0.8":
-            return url;
-           case "0.8+":  // or 0.7
-            return url;
-          case "0.8.1":
-            return url;
-          case "0.8mod":
-            return userChrome_js.baseUrl + url.substr(url.indexOf("chrome") + 7);
-        }
-        return url;
-      }
 
       //nameを比較する関数
       function cmp_name(a, b) {
@@ -440,15 +432,9 @@ this.debug('Parsing getScripts: '+((new Date()).getTime()-Start) +'msec');
     },
 
     getLastModifiedTime: function(aScriptFile) {
-      try {
-        if (this.REPLACECACHE) {
-          var aLocalfile = Components.classes["@mozilla.org/file/local;1"]
-          .createInstance(Components.interfaces.nsILocalFile);
-          aLocalfile.initWithPath(aScriptFile.path);
-          return aLocalfile.lastModifiedTime;
-        }
+      if (this.REPLACECACHE) {
         return aScriptFile.lastModifiedTime;
-      } catch(e) {}
+      }
       return "";
     },
 
@@ -515,42 +501,17 @@ this.debug('Parsing getScripts: '+((new Date()).getTime()-Start) +'msec');
 
       var overlay;
 
-      if( !this.EXPERIMENT && true ){ //← uc.jsでのloadOverlayに対応
-        for(var m=0,len=this.overlays.length; m<len; m++){
-          overlay = this.overlays[m];
-          if( overlay.filename != this.ALWAYSEXECUTE
-            && ( !!this.dirDisable['*']
-                 || !!this.dirDisable[overlay.dir]
-                 || !!this.scriptDisable[overlay.filename]) ) continue;
+      for(var m=0,len=this.overlays.length; m<len; m++){
+        overlay = this.overlays[m];
+        if(this.ALWAYSEXECUTE.indexOf(overlay.filename) < 0
+          && ( !!this.dirDisable['*']
+               || !!this.dirDisable[overlay.dir]
+               || !!this.scriptDisable[overlay.filename]) ) continue;
 
-          // decide whether to run the script
-          if(overlay.regex.test(dochref)){
-            if (this.INFO) this.debug("loadOverlay: " + overlay.filename);
-            this.loadOverlay(overlay.url + "?" + this.getLastModifiedTime(overlay.file), null, doc);
-          }
-        }
-      }else{
-        var XUL = '<?xml version="1.0"?>\n';
-        var count =0;
-        for(var m=0,len=this.overlays.length; m<len; m++){
-          overlay = this.overlays[m];
-          if( overlay.filename != this.ALWAYSEXECUTE
-            && ( !!this.dirDisable['*']
-                 || !!this.dirDisable[overlay.dir]
-                 || !!this.scriptDisable[overlay.filename]) ) continue;
-          // decide whether to run the script
-          if(overlay.regex.test(dochref)){
-            XUL += overlay.xul;
-            count++;
-          }
-        }
-        if(count==0) return;
-        XUL += '<overlay id="userChrome.uc.js-overlay" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">\n</overlay>\n';
-        try{
-            if (this.INFO) this.debug("loadOverlay: " + XUL);
-            this.loadOverlay("data:application/vnd.mozilla.xul+xml;charset=utf-8," + XUL, null, doc);
-        }catch(ex){
-            this.error(XUL, ex);
+        // decide whether to run the script
+        if(overlay.regex.test(dochref)){
+          if (this.INFO) this.debug("loadOverlay: " + overlay.filename);
+          this.loadOverlay(overlay.url + "?" + this.getLastModifiedTime(overlay.file), null, doc);
         }
       }
     },
@@ -562,9 +523,8 @@ this.debug('Parsing getScripts: '+((new Date()).getTime()-Start) +'msec');
       } catch (e) {
         return;
       }
-      if (!(doc instanceof XULDocument))
+      if (!(/*doc instanceof XULDocument ||*/ doc instanceof HTMLDocument))
           return;
-      if(!!this.dirDisable['*']) return;
 
       var script, aScript, url;
       const Cc = Components.classes;
@@ -592,8 +552,10 @@ this.debug('Parsing getScripts: '+((new Date()).getTime()-Start) +'msec');
 
       for(var m=0,len=this.scripts.length; m<len; m++){
         script = this.scripts[m];
-      if(!!this.dirDisable[script.dir]) continue;
-      if(!!this.scriptDisable[script.filename]) continue;
+      if (this.ALWAYSEXECUTE.indexOf(script.filename) < 0
+        && (!!this.dirDisable['*']
+          || !!this.dirDisable[script.dir]
+          || !!this.scriptDisable[script.filename]) ) continue;
       if( !script.regex.test(dochref)) continue;
         if( script.ucjs ){ //for UCJS_loader
             if (this.INFO) this.debug("loadUCJSSubScript: " + script.filename);
@@ -621,30 +583,6 @@ this.debug('Parsing getScripts: '+((new Date()).getTime()-Start) +'msec');
           }
         }
       }
-    },
-
-    /**
-      * 指定したバージョン文字列と現在の Gecko のバージョンを比較する
-      * @param {String} aVersion バージョン文字列(e.g. "1.8" "1.7.5")
-      * @return {Number}
-      * 実際のバージョンより指定したバージョンの方が新しければ 1、同じなら 0、古ければ -1
-      * @see nsIVersionComparator
-      * 例Gecko 1.9.0の環境で geckoVersionCompare("1.9.1") とすれば1
-      * 例Gecko 1.9.0の環境で geckoVersionCompare("1.8.5") とすれば-11が返される
-    */
-    geckoVersionCompare: function ChaikaBrowser_geckoVersionCompare(aVersion){
-      var versionComparator = Cc["@mozilla.org/xpcom/version-comparator;1"]
-          .getService(Ci.nsIVersionComparator);
-      var appInfo = Cc["@mozilla.org/xre/app-info;1"].getService(Ci.nsIXULAppInfo);
-      return versionComparator.compare(aVersion, appInfo.platformVersion);
-    },
-
-    //Fxのバージョンを 数値で返す 3.0 3.5 とか 3.6とか
-    getVer: function(){
-      var info = Components.classes["@mozilla.org/xre/app-info;1"]
-                 .getService(Components.interfaces.nsIXULAppInfo);
-      var ver = parseInt(info.version.substr(0,3) * 10,10) / 10;
-      return ver;
     },
 
     debug: function(aMsg){
@@ -733,127 +671,14 @@ this.debug('Parsing getScripts: '+((new Date()).getTime()-Start) +'msec');
       document.documentElement.getAttribute("chromehidden") !="" )
     return;
 
-  if( that.getVer()<3 ){
-    setTimeout(function(doc){that.runScripts(doc);
+  if (typeof gBrowser != undefined) {
+    that.runScripts(doc);
+    setTimeout(function(doc){that.runOverlays(doc);},0, doc);
+  } else {
+    setTimeout(function(doc){
+      that.runScripts(doc);
       setTimeout(function(doc){that.runOverlays(doc);},0, doc);
     },0, doc);
-  }else{
-    if (!that.EXPERIMENT) {
-      setTimeout(function(doc){
-        that.runScripts(doc);
-        //面倒だからFirefox 3 の場合はeditBookmarkOverlay.xulを先読みしておく
-        var delay = 500;
-        if (location.href === that.BROWSERCHROME &&
-            typeof StarUI != 'undefined' &&
-            !(StarUI._overlayLoading || StarUI._overlayLoaded)) {
-          // xxxx bug 726440
-          StarUI._overlayLoading = true;
-          that.loadOverlay(
-            "chrome://browser/content/places/editBookmarkOverlay.xul",
-            (function (aSubject, aTopic, aData) {
-              //XXX We just caused localstore.rdf to be re-applied (bug 640158)
-              if ("retrieveToolbarIconsizesFromTheme" in window)
-                retrieveToolbarIconsizesFromTheme();
-
-              // Move the header (star, title, button) into the grid,
-              // so that it aligns nicely with the other items (bug 484022).
-              let header = this._element("editBookmarkPanelHeader");
-              let rows = this._element("editBookmarkPanelGrid").lastChild;
-              rows.insertBefore(header, rows.firstChild);
-              header.hidden = false;
-
-              this._overlayLoading = false;
-              this._overlayLoaded = true;
-              //this._doShowEditBookmarkPanel(aItemId, aAnchorElement, aPosition);
-            }).bind(StarUI)
-          );
-          delay = 0;
-        }
-        setTimeout(function(doc){that.runOverlays(doc);}, delay, doc);
-      },500, doc);
-    } else {
-      that.runScripts(doc);
-      //面倒だからFirefox 3 の場合はeditBookmarkOverlay.xulを先読みしておく
-      if (location.href === that.BROWSERCHROME &&
-          typeof StarUI != 'undefined' &&
-          !(StarUI._overlayLoading || StarUI._overlayLoaded)) {
-        // xxxx bug 726440
-        StarUI._overlayLoading = true;
-        that.loadOverlay(
-          "chrome://browser/content/places/editBookmarkOverlay.xul",
-          (function (aSubject, aTopic, aData) {
-            //XXX We just caused localstore.rdf to be re-applied (bug 640158)
-            if ("retrieveToolbarIconsizesFromTheme" in window)
-              retrieveToolbarIconsizesFromTheme();
-
-            // Move the header (star, title, button) into the grid,
-            // so that it aligns nicely with the other items (bug 484022).
-            let header = this._element("editBookmarkPanelHeader");
-            let rows = this._element("editBookmarkPanelGrid").lastChild;
-            rows.insertBefore(header, rows.firstChild);
-            header.hidden = false;
-
-            this._overlayLoading = false;
-            this._overlayLoaded = true;
-            //this._doShowEditBookmarkPanel(aItemId, aAnchorElement, aPosition);
-          }).bind(StarUI)
-        );
-      }
-      that.runOverlays(doc);
-    }
   }
-  //Sidebar for Trunc
-  if(location.href != that.BROWSERCHROME) return;
-  if(that.getVer()>2 ){
-    window.document.addEventListener("load",
-      function(event){
-        if (!event.originalTarget.location) return;
-        if(/^(about:(blank|newtab|home))/i.test(event.originalTarget.location.href)) return;
-        if( !/^(about:|chrome:)/.test(event.originalTarget.location.href) )return;
-        var doc = event.originalTarget;
-        var href = doc.location.href;
-        if (that.INFO) that.debug("load Sidebar " +  href);
-        setTimeout(function(doc){that.runScripts(doc);
-          setTimeout(function(doc){that.runOverlays(doc);}, 0, doc);
-        },0, doc);
-        if (href != "chrome://browser/content/web-panels.xul") return;
-        if (!window.document.getElementById("sidebar")) return;
-        var sidebarWindow = window.document.getElementById("sidebar").contentWindow;
-          if (sidebarWindow){
-            loadInWebpanel.init(sidebarWindow);
-          }
-      }
-    , true);
-  }
-  var loadInWebpanel = {
-    sidebarWindow: null,
-    init: function(sidebarWindow){
-      this.sidebarWindow = sidebarWindow;
-      this.sidebarWindow.document.getElementById("web-panels-browser").addEventListener("load", this, true);
-      this.sidebarWindow.addEventListener("unload", this, false);
-    },
-    handleEvent: function(event){
-      switch (event.type) {
-        case "unload":
-          this.uninit(event);
-          break;
-        case "load":
-          this.load(event);
-          break;
-      }
-    },
-    uninit: function(event){
-      this.sidebarWindow.document.getElementById("web-panels-browser").removeEventListener("load", this, true);
-      this.sidebarWindow.removeEventListener("unload", this, false);
-    },
-    load: function(event){
-      var doc = event.originalTarget;
-      var href = doc.location.href;
-        if( !/^chrome:/.test(href) )return;
-        if (that.INFO) that.debug("load Webpanel " +  href);
-        setTimeout(function(doc){that.runScripts(doc);
-          setTimeout(function(doc){that.runOverlays(doc);},0, doc);
-        },0, doc);
-    }
-  }
+
 })();

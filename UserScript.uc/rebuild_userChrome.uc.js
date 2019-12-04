@@ -1,13 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-<!--
 // ==UserScript==
-// @name           rebuild_userChrome.uc.xul
+// @name           rebuild_userChrome.uc.js
 // @namespace      http://space.geocities.yahoo.co.jp/gl/alice0775
 // @description    userChrome.js用のスクリプトのキャッシュをクリアーし,新しいウインドウを開く
+// @charset        utf-8
 // @include        main
-// @compatibility  Firefox 3.5b4pre 3.6a1pre 4.0b7pre
+// @compatibility  Firefox 69
 // @author         Alice0775
+// Date 2019/05/21 08:30 fix 69.0a1 Bug 1534407 - Enable browser.xhtml by default, Bug 1551320 - Replace all CreateElement calls in XUL documents with CreateXULElement
+// @version        2019/04/19 14:00 Fixed 68a1 due to Bug 1519502 - Convert menu bindings to a Custom Element
+// @version        2018/04/14 00:00 de XUL
+// @version        2017/11/23 23:00 Services :(
+// @version        2017/11/14 21:00 use nsIFile instead nsILocalFile
+// @version        2017/11/14 21:00 use Services.jsm
+// @version        2016/11/28 21:00 remove "for each"
 // @version        2015/12/04 24:00 Bug 1177310 [e10s] Stop using CPOWs on application shutdow
 // @version        2013/03/20 24:00 force cancel default right click action for unknown modification
 // @version        2013/03/22 08:02 Added "use strict"
@@ -35,15 +40,16 @@
 // @version        2007/12/14 17:00 スクリプトの有効/無効/編集を設定できるようにした
 // @Note           使用するエディタを編集しておくこと
 // @Note           Required Sub-Script/Overlay Loader v3.0.38mod( https://github.com/alice0775/userChrome.js/blob/master/userChrome.js )
- -->
-<script type="application/javascript" xmlns="http://www.w3.org/1999/xhtml"><![CDATA[
-  "use strict";
+
+
+  Components.utils.import('resource://gre/modules/Services.jsm');
   var userChromejs = {
 // --- config ---
-    editor: "D:\\Program Files\\emacs\\bin\\runemacs.exe",
+    editor: "C:\\Program Files\\hidemaru\\hidemaru.exe",
     // editor: "/usr/bin/gedit",
 // --- config ---
     _statusDisplay: null,
+
     get statusDisplay() {
       if (!this._statusDisplay)
         this._statusDisplay = document.getElementById('status-bar') ||
@@ -72,8 +78,62 @@
       }
     },
 
+    createElement: function(localName, arryAttribute) {
+      let elm = document.createXULElement(localName);
+      for(let i = 0; i < arryAttribute.length; i++) {
+        elm.setAttribute(arryAttribute[i].attr, arryAttribute[i].value);
+      }
+      return elm;
+    },
+
     init: function(){
       window.addEventListener("unload",this , false);
+
+      let ref = document.getElementById("menu_preferences");
+      let menu = ref.parentNode.insertBefore(
+        this.createElement("menu",
+          [{attr: "id", value:"userChrome.js_menu"},
+           {attr: "label", value:"userChrome.jsの設定"},
+           {attr: "accesskey", value:"u"}
+          ]), ref);
+      let popup = menu.appendChild(this.createElement("menupopup",
+        [{attr: "id", value:"userChromejs_options"},
+         /*{attr: "onpopupshowing", value:"userChromejs.onpopup()"},*/
+         {attr: "context", value:""}
+        ]));
+      popup.appendChild(this.createElement("menuitem",
+        [{attr: "id", value:"userChrome_setting"},
+         {attr: "label", value:"スクリプトをウィンドウ毎に読み直す"},
+         {attr: "accesskey", value:"u"},
+         {attr: "oncommand", value:"userChromejs.setting();"},
+         {attr: "type", value:"checkbox"}
+        ]));
+      popup.appendChild(this.createElement("menuitem",
+        [{attr: "label", value:"userChrome.jsの再構築/新しいウィンドウ"},
+         {attr: "accesskey", value:"x"},
+         {attr: "oncommand", value:"userChromejs.rebuild();"}
+        ]));
+      popup.appendChild(this.createElement("menuitem",
+        [{attr: "label", value:"ブラウザを再起動する"},
+         {attr: "accesskey", value:"r"},
+         {attr: "oncommand", value:"userChromejs.restartApp();"}
+        ]));
+      popup.appendChild(this.createElement("menuitem",
+        [{attr: "label", value:"chromeフォルダを開く"},
+         {attr: "accesskey", value:"h"},
+         {attr: "oncommand", value:'new Components.Constructor("@mozilla.org/file/local;1","nsIFile", "initWithPath")(Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("UChrm", Components.interfaces.nsIFile).path).reveal();'}
+        ]));
+
+      menu = ref.parentNode.insertBefore(
+        this.createElement("menu",
+          [{attr: "id", value:"userChromejs_script_options_Menu"},
+           {attr: "label", value:"userChrome.jsの各スクリプトの設定"},
+           {attr: "accesskey", value:"s"}
+          ]), ref);
+      popup = menu.appendChild(this.createElement("menupopup",
+        [{attr: "id", value:"userChromejs_script_options"}
+        ]));
+
       if ("nsDragAndDrop" in window && this.statusDisplay) {
         this.statusDisplay.addEventListener('dragover',function(event){nsDragAndDrop.dragOver(event,userChromejs.dndObserver);},true);
         this.statusDisplay.addEventListener('dragdrop',function(event){nsDragAndDrop.drop(event,userChromejs.dndObserver);},true);
@@ -82,6 +142,7 @@
         this.addonbar.addEventListener('drop', this ,true);
       }
       this.addPrefListener(userChromejs.readLaterPrefListener); // 登録処理
+      document.getElementById("menu_ToolsPopup").addEventListener("popupshowing", function(event) {if (event.target == this) userChromejs.onpopup(event);}, false);
     },
     uninit: function(){
       if ("nsDragAndDrop" in window && this.statusDisplay) {
@@ -99,7 +160,7 @@
                         .getService(Ci.nsIDragService);
       var dragSession = dragService.getCurrentSession();
       var supportedTypes = ["text/x-moz-url", "text/unicode", "application/x-moz-file"];
-      for (var type of supportedTypes) {
+      for (let type of supportedTypes) {
         if (event.dataTransfer.types.contains(type)) {
           var data = event.dataTransfer.getData(type);
           var url = (/^\s*(.*?)\s*$/m.test(data))
@@ -118,7 +179,7 @@
                         .getService(Ci.nsIDragService);
       var dragSession = dragService.getCurrentSession();
       var supportedTypes = ["text/x-moz-url", "text/unicode", "application/x-moz-file"];
-      for (var type of supportedTypes) {
+      for (let type of supportedTypes) {
         if (event.dataTransfer.types.contains(type)) {
           var data = event.dataTransfer.getData(type);
           this.dndObserver.onDrop(event, {data: data}, dragSession);
@@ -256,7 +317,7 @@
       var flag = this.getPref("userChrome.enable.reuse",'bool',true);
       this.setPref("userChrome.enable.reuse",'bool',!flag);
     },
-    onpopup: function(){
+    onpopup: function(event){
       var menu;
       var flag = this.getPref("userChrome.enable.reuse",'bool',true);
       var menuitem = document.getElementById('userChrome_setting');
@@ -267,10 +328,10 @@
         menupopup.removeChild(menupopup.lastChild);
       }
 
-      var menuseparator = document.createElement('menuseparator');
+      var menuseparator = document.createXULElement('menuseparator');
       menupopup.appendChild(menuseparator);
 
-      menuitem = document.createElement('menuitem');
+      menuitem = document.createXULElement('menuitem');
       menuitem.setAttribute('label','userCrome.js \u306e \u6709\u52b9/\u7121\u52b9');
       menuitem.setAttribute('oncommand','userChromejs.chgDirStat("*");');
       menuitem.setAttribute('onclick','userChromejs.clickDirMenuitem(event,true);');
@@ -299,17 +360,17 @@
         if(!flg) continue;
 
 
-        menu = document.createElement('menu');
+        menu = document.createXULElement('menu');
         menu.setAttribute('label','chrome/' + (dirName=="root"?"":dirName) );
         menu.setAttribute('onclick','userChromejs.clickDirMenu(event);');
         if(userChrome_js.dirDisable[dirName])
           menu.setAttribute('style', 'font-style:italic;');
         menu.dirName = dirName;
 
-        menupopup = document.createElement('menupopup');
-        menupopup.setAttribute('onpopupshowing','event.stopPropagation();');
+        menupopup = document.createXULElement('menupopup');
+        //menupopup.setAttribute('onpopupshowing','event.stopPropagation();');
 
-        menuitem = document.createElement('menuitem');
+        menuitem = document.createXULElement('menuitem');
         menuitem.setAttribute('label','chrome/' + (dirName=="root"?"":dirName) + ' \u30d5\u30a9\u30eb\u30c0\u306e\u30b9\u30af\u30ea\u30d7\u30c8\u306e\u6709\u52b9/\u7121\u52b9');
         menuitem.setAttribute('oncommand', 'userChromejs.chgDirStat(this.dirName);');
         menuitem.setAttribute('onclick','userChromejs.clickDirMenuitem(event);');
@@ -318,7 +379,7 @@
         menuitem.dirName = dirName;
         menupopup.appendChild(menuitem);
 
-        menuseparator = document.createElement('menuseparator');
+        menuseparator = document.createXULElement('menuseparator');
         menupopup.appendChild(menuseparator);
 
         var flg = false;
@@ -326,7 +387,7 @@
           var script = userChrome_js.scripts[i];
           if(script.dir != dirName) continue;
             flg = true;
-            menuitem = document.createElement('menuitem');
+            menuitem = document.createXULElement('menuitem');
             menuitem.setAttribute('label',script.filename);
             menuitem.setAttribute('oncommand','userChromejs.chgScriptStat(this.script.filename);');
             menuitem.setAttribute('onclick','userChromejs.clickScriptMenu(event);');
@@ -342,11 +403,11 @@
           var script = userChrome_js.overlays[i];
           if(script.dir != dirName) continue;
             if(flg){
-              menuseparator = document.createElement('menuseparator');
+              menuseparator = document.createXULElement('menuseparator');
               menupopup.appendChild(menuseparator);
             }
             flg = false;
-            menuitem = document.createElement('menuitem');
+            menuitem = document.createXULElement('menuitem');
             menuitem.setAttribute('label',script.filename);
             menuitem.setAttribute('oncommand','userChromejs.chgScriptStat(this.script.filename);');
             menuitem.setAttribute('onclick','userChromejs.clickScriptMenu(event);');
@@ -418,7 +479,7 @@
       var path = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService).getProtocolHandler('file').QueryInterface(Components.interfaces.nsIFileProtocolHandler).getFileFromURLSpec(aScript.url).path
       path = UI.ConvertFromUnicode(path);
 
-      var appfile = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsILocalFile);
+      var appfile = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsIFile);
       appfile.initWithPath(editor);
       var process = Components.classes['@mozilla.org/process/util;1'].createInstance(Components.interfaces.nsIProcess);
       process.init(appfile);
@@ -459,12 +520,11 @@
 
     //prefを読み込み
     getPref: function(aPrefString, aPrefType, aDefault){
-      var xpPref = Components.classes['@mozilla.org/preferences-service;1']
-                    .getService(Components.interfaces.nsIPrefBranch2);
-      try{
+      var xpPref = Services.prefs;
+      try {
         switch (aPrefType){
           case 'complex':
-            return xpPref.getComplexValue(aPrefString, Components.interfaces.nsILocalFile); break;
+            return xpPref.getComplexValue(aPrefString, Components.interfaces.nsIFile); break;
           case 'str':
             return unescape(xpPref.getCharPref(aPrefString).toString()); break;
           case 'int':
@@ -473,18 +533,16 @@
           default:
             return xpPref.getBoolPref(aPrefString); break;
         }
-      }catch(e){
-      }
+        } catch(e) {}
       return aDefault;
     },
     //prefを書き込み
     setPref: function(aPrefString, aPrefType, aValue){
-      var xpPref = Components.classes['@mozilla.org/preferences-service;1']
-                    .getService(Components.interfaces.nsIPrefBranch2);
-      try{
+      var xpPref = Services.prefs;
+      try {
         switch (aPrefType){
           case 'complex':
-            return xpPref.setComplexValue(aPrefString, Components.interfaces.nsILocalFile, aValue); break;
+            return xpPref.setComplexValue(aPrefString, Components.interfaces.nsIFile, aValue); break;
           case 'str':
             return xpPref.setCharPref(aPrefString, escape(aValue)); break;
           case 'int':
@@ -494,15 +552,13 @@
           default:
             return xpPref.setBoolPref(aPrefString, aValue); break;
         }
-      }catch(e){
-      }
+        } catch(e) {}
       return null;
     },
     // 監視を開始する
     addPrefListener: function(aObserver) {
         try {
-            var pbi = Components.classes['@mozilla.org/preferences;1']
-                      .getService(Components.interfaces.nsIPrefBranch2);
+            var pbi = Services.prefs;
             pbi.addObserver(aObserver.domain, aObserver, false);
         } catch(e) {}
     },
@@ -510,8 +566,7 @@
     // 監視を終了する
     removePrefListener: function(aObserver) {
         try {
-            var pbi = Components.classes['@mozilla.org/preferences;1']
-                      .getService(Components.interfaces.nsIPrefBranch2);
+            var pbi =  Services.prefs;
             pbi.removeObserver(aObserver.domain, aObserver);
         } catch(e) {}
     },
@@ -622,64 +677,3 @@
     },
   }
   userChromejsScriptOptionsMenu.run();
-  ]]></script>
-
-  <menupopup id="menu_ToolsPopup" idxxxx="contentAreaContextMenu">
-    <menu label="userChrome.jsの設定" accesskey="u"
-          insertbefore="menu_preferences" >
-      <menupopup id="userChromejs_options"
-                 onpopupshowing="userChromejs.onpopup()"
-                 context="">
-        <menuitem id="userChrome_setting"
-                  label="スクリプトをウィンドウ毎に読み直す"
-                  accesskey="u"
-                  oncommand="userChromejs.setting();"
-                  type="checkbox" />
-        <menuitem label="userChrome.jsの再構築/新しいウィンドウ"
-                  accesskey="x"
-                  oncommand="userChromejs.rebuild();"/>
-        <menuitem label="ブラウザを再起動する"
-                  accesskey="r"
-                  oncommand="userChromejs.restartApp();"/>
-        <menuitem label="chromeフォルダを開く"
-                  accesskey="h"
-                  oncommand='new Components.Constructor("@mozilla.org/file/local;1","nsILocalFile", "initWithPath")(Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("UChrm", Components.interfaces.nsIFile).path).reveal();'/>
-      </menupopup>
-    </menu>
-    <!--
-        <menu id="userChromejs_script_options_Menu" label="userChrome.jsの各スクリプトの設定" accesskey="s"
-        insertbefore="menu_preferences" >
-        <menupopup id="userChromejs_script_options" />
-        </menu>
-    -->
-  </menupopup>
-
-  <menupopup id="taskPopup">
-    <menu label="userChrome.jsの設定" accesskey="u"
-          insertbefore="menu_preferences" >
-      <menupopup id="userChromejs_options"
-                 onpopupshowing="userChromejs.onpopup()"
-                 context="">
-        <menuitem id="userChrome_setting"
-                  label="スクリプトをウィンドウ毎に読み直す"
-                  accesskey="u"
-                  oncommand="userChromejs.setting();"
-                  type="checkbox" />
-        <menuitem label="userChrome.jsの再構築/新しいウィンドウ"
-                  accesskey="x"
-                  oncommand="userChromejs.rebuild();"/>
-        <menuitem label="再起動する"
-                  accesskey="r"
-                  oncommand="userChromejs.restartApp();"/>
-        <menuitem label="chromeフォルダを開く"
-                  accesskey="h"
-                  oncommand='new Components.Constructor("@mozilla.org/file/local;1","nsILocalFile", "initWithPath")(Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("UChrm", Components.interfaces.nsIFile).path).reveal();'/>
-      </menupopup>
-    </menu>
-
-    <menu id="userChromejs_script_options_Menu" label="userChrome.jsの各スクリプトの設定" accesskey="s"
-          insertbefore="menu_preferences" >
-      <menupopup id="userChromejs_script_options" />
-    </menu>
-  </menupopup>
-</overlay>

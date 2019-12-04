@@ -1,5 +1,14 @@
-/* @charset "utf-8"; */
+@charset "utf-8";
+
 /* @import url("CSS/userChrome/Change_minimize_mazimize_close.css"); */
 /* @import url("CSS/userChrome/tabs_squared.css"); */
-@import url("CSS/userChrome/Tab_Bar_Setting.css");
+/* @import url("CSS/userChrome/Tab_Bar_Setting.css"); */
 @import url("CSS/userChrome/Navigation_Tool_Bar_Setting.css");
+
+/* @import "userChromeCSS/SidebarModoki.uc.js.css"; */
+/* @import "userChromeCSS/ucjsDownloadsStatusModoki.uc.js.css"; */
+
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+/* before FF71 */
+/* toolbarbutton#alltabs-button { -moz-binding: url("userChrome.xml#js"); } */
