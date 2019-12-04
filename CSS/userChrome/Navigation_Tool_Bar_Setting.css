@@ -6,7 +6,7 @@
 /* Navigation_Tool_Bar_Setting
 /*
 /*----------------------------------------------------------------------------*/
-@-moz-document url(chrome://browser/content/browser.xul){
+@-moz-document url(chrome://browser/content/browser.xhtml){
 
     /* -------------------- < 再読み込みボタンの左側表示 > -------------------- */
     /* #urlbar > .autocomplete-textbox-container */

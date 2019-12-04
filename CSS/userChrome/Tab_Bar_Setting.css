@@ -6,7 +6,7 @@
 /* Tab_Bar_Setting
 /*
 /*----------------------------------------------------------------------------*/
-@-moz-document url(chrome://browser/content/browser.xul){
+@-moz-document url(chrome://browser/content/browser.xhtml){
 
     /* -------------------- < margin > -------------------- */
     /* #main-window[tabsintitlebar][sizemode="normal"] #tab-view-deck */
@@ -125,9 +125,9 @@
 
     /* Hide horizontal tabs at the top of the window */
     /* #tabbrowser-tabs { */
-    #TabsToolbar {
-        visibility: collapse !important;
-    }
+    /* #TabsToolbar { */
+    /*     visibility: collapse !important; */
+    /* } */
     /*----------------------------------------------------------------------------*/
 
 }

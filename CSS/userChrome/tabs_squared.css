@@ -6,7 +6,7 @@
 /* tabs_squared from Classic Theme Restorer (Customize Australis)
 /*
 /*----------------------------------------------------------------------------*/
-@-moz-document url(chrome://browser/content/browser.xul){
+@-moz-document url(chrome://browser/content/browser.xhtml){
 
     .tabbrowser-tab:hover > .tab-stack > .tab-background > .tab-background-middle:not([selected=true]),
     .tabbrowser-tab:hover > .tab-stack > .tab-background > .tab-background-start:not([selected=true]),

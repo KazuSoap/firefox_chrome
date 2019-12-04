@@ -6,7 +6,7 @@
 /* Change minimize mazimize close
 /*
 /*----------------------------------------------------------------------------*/
-@-moz-document url(chrome://browser/content/browser.xul){
+@-moz-document url(chrome://browser/content/browser.xhtml){
 
     /* -------------------- < button > -------------------- */
 
