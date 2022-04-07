@@ -1,5 +1,4 @@
 @charset "utf-8";
-@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
 /*----------------------------------------------------------------------------*/
 /*
@@ -99,11 +98,11 @@
     /*     padding-right: 2px !important */
     /* } */
 
-    #urlbar-search-splitter
-    {
-        min-width: 5px !important;
-        max-width: 5px !important;
-    }
+    /* #urlbar-search-splitter */
+    /* { */
+    /*     min-width: 5px !important; */
+    /*     max-width: 5px !important; */
+    /* } */
 
     /* -------------------- < other tips > -------------------- */
     /* #nav-bar-customization-target */

@@ -1,4 +1,4 @@
-/* :::::::: Sub-Script/Overlay Loader v3.0.59mod no bind version ::::::::::::::: */
+/* :::::::: Sub-Script/Overlay Loader v3.0.61mod no bind version ::::::::::::::: */
 
 // automatically includes all files ending in .uc.xul and .uc.js from the profile's chrome folder
 
@@ -14,6 +14,10 @@
 // 4.Support window.userChrome_js.loadOverlay(overlay [,observer]) //
 // Modified by Alice0775
 //
+// @version       2021/08/05 fix for 92+ port Bug 1723723 - Switch JS consumers from getURLSpecFromFile to either getURLSpecFromActualFile or getURLSpecFromDir
+// @version       2021/06/25 skip for in-content dialog etc.
+// @version       2019/12/11 fix for 73 Bug 1601094 - Rename remaining .xul files to .xhtml in browser and Bug 1601093 - Rename remaining .xul files to .xhtml in toolkit
+// Date 2019/12/11 01:30 fix 72 revert the code for sidebar, use "load" in config.js(2019/12/11 01:30), 
 // Date 2019/08/11 21:30 fix 70.0a1  Bug 1551344 - Remove XULDocument code
 // Date 2019/05/21 08:30 fix 69.0a1 Bug 1534407 - Enable browser.xhtml by default, Bug 1551320 - Replace all CreateElement calls in XUL documents with CreateXULElement
 // Date 2018/08/10 01:30 fix 63.0a1
@@ -113,7 +117,10 @@
   if(/^(about:(blank|newtab|home))/i.test(location.href)) return;
   //コモンダイアログに対するオーバーレイが今のところ無いので時間短縮のためスキップすることにした
   if(location.href =='chrome://global/content/commonDialog.xul') return;
+  if(location.href =='chrome://global/content/commonDialog.xhtml') return;
+  if(location.href =='chrome://global/content/selectDialog.xhtml') return;
   if(location.href =='chrome://global/content/alerts/alert.xul') return;
+  if(location.href =='chrome://global/content/alerts/alert.xhtml') return;
   if(/\.html?$/i.test(location.href)) return;
   window.userChrome_js = {
     USE_0_63_FOLDER: USE_0_63_FOLDER,
@@ -274,7 +281,7 @@ this.debug('Parsing getScripts: '+((new Date()).getTime()-Start) +'msec');
         //}catch(e){}
         if (description =="" || !description)
           description = aFile.leafName;
-        var url = fph.getURLSpecFromFile(aFile);
+        var url = fph.getURLSpecFromActualFile(aFile);
 
         return {
           filename: aFile.leafName,
@@ -455,8 +462,8 @@ this.debug('Parsing getScripts: '+((new Date()).getTime()-Start) +'msec');
           aObserver.observe = aObserver;
         }
         if (!doc) doc = document;
-        if (!(doc instanceof XULDocument))
-          return 0;
+        /*if (!(doc instanceof XULDocument))
+          return 0;*/
         var observer = {
           observe:function (subject, topic, data) {
             if (topic == 'xul-overlay-merged') {
@@ -681,4 +688,63 @@ this.debug('Parsing getScripts: '+((new Date()).getTime()-Start) +'msec');
     },0, doc);
   }
 
+
+  //Sidebar for Trunc
+  if(location.href != that.BROWSERCHROME) return;
+  window.document.addEventListener("load",
+    function(event){
+      if (!event.originalTarget.location) return;
+      if(/^(about:(blank|newtab|home))/i.test(event.originalTarget.location.href)) return;
+      if( !/^(about:|chrome:)/.test(event.originalTarget.location.href) )return;
+      var doc = event.originalTarget;
+      var href = doc.location.href;
+      // skip for in-content dialog etc.
+      if(href =='chrome://global/content/commonDialog.xhtml') return;
+      if(href =='chrome://global/content/selectDialog.xhtml') return;
+      if(href =='chrome://global/content/alerts/alert.xhtml') return;
+
+      if (that.INFO) that.debug("load Sidebar " +  href);
+      setTimeout(function(doc){that.runScripts(doc);
+        setTimeout(function(doc){that.runOverlays(doc);}, 0, doc);
+      },0, doc);
+      if (href != "chrome://browser/content/web-panels.xul") return;
+      if (!window.document.getElementById("sidebar")) return;
+      var sidebarWindow = window.document.getElementById("sidebar").contentWindow;
+        if (sidebarWindow){
+          loadInWebpanel.init(sidebarWindow);
+        }
+    }
+  , true);
+
+  var loadInWebpanel = {
+    sidebarWindow: null,
+    init: function(sidebarWindow){
+      this.sidebarWindow = sidebarWindow;
+      this.sidebarWindow.document.getElementById("web-panels-browser").addEventListener("load", this, true);
+      this.sidebarWindow.addEventListener("unload", this, false);
+    },
+    handleEvent: function(event){
+      switch (event.type) {
+        case "unload":
+          this.uninit(event);
+          break;
+        case "load":
+          this.load(event);
+          break;
+      }
+    },
+    uninit: function(event){
+      this.sidebarWindow.document.getElementById("web-panels-browser").removeEventListener("load", this, true);
+      this.sidebarWindow.removeEventListener("unload", this, false);
+    },
+    load: function(event){
+      var doc = event.originalTarget;
+      var href = doc.location.href;
+        if( !/^chrome:/.test(href) )return;
+        if (that.INFO) that.debug("load Webpanel " +  href);
+        setTimeout(function(doc){that.runScripts(doc);
+          setTimeout(function(doc){that.runOverlays(doc);},0, doc);
+        },0, doc);
+    }
+  }
 })();

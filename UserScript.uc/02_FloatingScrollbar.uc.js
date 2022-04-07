@@ -19,7 +19,6 @@
     }
 
     var css = '\
-    @namespace url(http: //www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);\
     :not(select):not(hbox) > scrollbar {\
         -moz-appearance: none!important;\
         position: relative;\
