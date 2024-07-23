@@ -1,4 +1,4 @@
-/* :::::::: Sub-Script/Overlay Loader v3.0.61mod no bind version ::::::::::::::: */
+/* :::::::: Sub-Script/Overlay Loader v3.0.64mod no bind version ::::::::::::::: */
 
 // automatically includes all files ending in .uc.xul and .uc.js from the profile's chrome folder
 
@@ -14,6 +14,9 @@
 // 4.Support window.userChrome_js.loadOverlay(overlay [,observer]) //
 // Modified by Alice0775
 //
+// @version       2022/08/26 Bug 1695435 - Remove @@hasInstance for IDL interfaces in chrome context
+// @version       2022/08/26 fix load sidebar
+// @version       2022/04/01 remove nsIIOService
 // @version       2021/08/05 fix for 92+ port Bug 1723723 - Switch JS consumers from getURLSpecFromFile to either getURLSpecFromActualFile or getURLSpecFromDir
 // @version       2021/06/25 skip for in-content dialog etc.
 // @version       2019/12/11 fix for 73 Bug 1601094 - Rename remaining .xul files to .xhtml in browser and Bug 1601093 - Rename remaining .xul files to .xhtml in toolkit
@@ -154,9 +157,8 @@
     getScripts: function(){
       const Cc = Components.classes;
       const Ci = Components.interfaces;
-      const ios = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
-      const fph = ios.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
-      const ds = Cc["@mozilla.org/file/directory_service;1"].getService(Ci.nsIProperties);
+      const fph = Services.io.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
+      const ds = Services.dirsvc;
 var Start = new Date().getTime();
       //getdir
       if (this.USE_0_63_FOLDER) {
@@ -530,7 +532,7 @@ this.debug('Parsing getScripts: '+((new Date()).getTime()-Start) +'msec');
       } catch (e) {
         return;
       }
-      if (!(/*doc instanceof XULDocument ||*/ doc instanceof HTMLDocument))
+      if (!HTMLDocument.isInstance(doc))
           return;
 
       var script, aScript, url;
@@ -578,13 +580,13 @@ this.debug('Parsing getScripts: '+((new Date()).getTime()-Start) +'msec');
           if (this.INFO) this.debug("loadSubScript: " + script.filename);
           try {
             if (script.charset)
-              Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader)
-                       .loadSubScript(script.url + "?" + this.getLastModifiedTime(script.file),
-                                      doc.defaultView, script.charset);
+              Services.scriptloader.loadSubScript(
+                         script.url + "?" + this.getLastModifiedTime(script.file),
+                         doc.defaultView, script.charset);
             else
-              Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(Ci.mozIJSSubScriptLoader)
-                       .loadSubScript(script.url + "?" + this.getLastModifiedTime(script.file),
-                                      doc.defaultView);
+              Services.scriptloader.loadSubScript(
+                         script.url + "?" + this.getLastModifiedTime(script.file),
+                         doc.defaultView);
           }catch(ex) {
             this.error(script.filename, ex);
           }

@@ -8,20 +8,30 @@
 // @author         Kazu.Soap
 // @version        2016.4.25
 // ==/UserScript==
-(function()
- {
-     // メニューボタン(≡)ダブルクリックで再起動
-     // restartApp find here: chrome://mozapps/content/extensions/extensions.js
-     document.getElementById("PanelUI-menu-button").ondblclick = function restartApp(clearCache) {
-         let cancelQuit = Cc["@mozilla.org/supports-PRBool;1"].
-             createInstance(Ci.nsISupportsPRBool);
-         Services.obs.notifyObservers(cancelQuit, "quit-application-requested",
-                                      "restart");
-         if (cancelQuit.data)
-             return; // somebody canceled our quit request
-
-         let appStartup = Cc["@mozilla.org/toolkit/app-startup;1"].
-             getService(Ci.nsIAppStartup);
-         appStartup.quit(Ci.nsIAppStartup.eAttemptQuit |  Ci.nsIAppStartup.eRestart);
-     }
- })();
+(function() {
+  // メニューボタン(≡)ダブルクリックで再起動
+  // restartApp find here: omni.ja > modules/UrlbarProviderInterventions.sys.mjs
+  document.getElementById("PanelUI-menu-button").ondblclick = function restartApp() {
+    // Notify all windows that an application quit has been requested.
+    let cancelQuit = Cc["@mozilla.org/supports-PRBool;1"].createInstance(
+      Ci.nsISupportsPRBool
+    );
+    Services.obs.notifyObservers(
+      cancelQuit,
+      "quit-application-requested",
+      "restart"
+    );
+    // Something aborted the quit process.
+    if (cancelQuit.data) {
+      return;
+    }
+    // If already in safe mode restart in safe mode.
+    if (Services.appinfo.inSafeMode) {
+      Services.startup.restartInSafeMode(Ci.nsIAppStartup.eAttemptQuit);
+    } else {
+      Services.startup.quit(
+        Ci.nsIAppStartup.eAttemptQuit | Ci.nsIAppStartup.eRestart
+      );
+    }
+  }
+})();

@@ -4,8 +4,12 @@
 // @description    userChrome.js用のスクリプトのキャッシュをクリアーし,新しいウインドウを開く
 // @charset        utf-8
 // @include        main
-// @compatibility  Firefox 69
+// @compatibility  Firefox106
 // @author         Alice0775
+// @version        2023/06/20 remove Bug 1780695 - Remove Services.jsm
+// @version        2022/04/01 23:00 Convert Components.utils.import to ChromeUtils.import
+// @version        2022/04/01 remove nsIIOService
+// @version        2020/04/25 14:00 prevent close menu when middleclick
 // Date 2019/05/21 08:30 fix 69.0a1 Bug 1534407 - Enable browser.xhtml by default, Bug 1551320 - Replace all CreateElement calls in XUL documents with CreateXULElement
 // @version        2019/04/19 14:00 Fixed 68a1 due to Bug 1519502 - Convert menu bindings to a Custom Element
 // @version        2018/04/14 00:00 de XUL
@@ -42,7 +46,6 @@
 // @Note           Required Sub-Script/Overlay Loader v3.0.38mod( https://github.com/alice0775/userChrome.js/blob/master/userChrome.js )
 
 
-  Components.utils.import('resource://gre/modules/Services.jsm');
   var userChromejs = {
 // --- config ---
     editor: "C:\\Program Files\\hidemaru\\hidemaru.exe",
@@ -121,7 +124,7 @@
       popup.appendChild(this.createElement("menuitem",
         [{attr: "label", value:"chromeフォルダを開く"},
          {attr: "accesskey", value:"h"},
-         {attr: "oncommand", value:'new Components.Constructor("@mozilla.org/file/local;1","nsIFile", "initWithPath")(Components.classes["@mozilla.org/file/directory_service;1"].getService(Components.interfaces.nsIProperties).get("UChrm", Components.interfaces.nsIFile).path).reveal();'}
+         {attr: "oncommand", value:'new Components.Constructor("@mozilla.org/file/local;1","nsIFile", "initWithPath")(Services.dirsvc.get("UChrm", Components.interfaces.nsIFile).path).reveal();'}
         ]));
 
       menu = ref.parentNode.insertBefore(
@@ -241,9 +244,7 @@
           //ドロップしたurl
           var url = (/^\s*(.*?)\s*$/m.test(dropdata.data))?RegExp.$1:null;
           //保存ホルダ nsIFile
-          var folder = Components.classes["@mozilla.org/file/directory_service;1"]
-                             .getService(Components.interfaces.nsIProperties)
-                             .get("UChrm", Components.interfaces.nsIFile);
+          var folder = Services.dirsvc.get("UChrm", Components.interfaces.nsIFile);
           //デフォルトのファイル名
           if(/(.*)\n?(.*)?/m.test(dropdata.data) )
             fname = RegExp.$2?RegExp.$2:"";
@@ -391,7 +392,8 @@
             menuitem.setAttribute('label',script.filename);
             menuitem.setAttribute('oncommand','userChromejs.chgScriptStat(this.script.filename);');
             menuitem.setAttribute('onclick','userChromejs.clickScriptMenu(event);');
-            menuitem.setAttribute('type','checkbox');
+            menuitem.setAttribute('onmouseup','if(event.button == 1) event.preventDefault();');
+                        menuitem.setAttribute('type','checkbox');
             menuitem.setAttribute('autocheck','false');
             menuitem.setAttribute('checked',!userChrome_js.scriptDisable[script.filename] );
             if(script.description)
@@ -411,6 +413,7 @@
             menuitem.setAttribute('label',script.filename);
             menuitem.setAttribute('oncommand','userChromejs.chgScriptStat(this.script.filename);');
             menuitem.setAttribute('onclick','userChromejs.clickScriptMenu(event);');
+            menuitem.setAttribute('onmouseup','if(event.button == 1) event.preventDefault();');
             menuitem.setAttribute('type','checkbox');
             menuitem.setAttribute('autocheck','false');
             menuitem.setAttribute('checked',!userChrome_js.scriptDisable[script.filename] );
@@ -467,6 +470,7 @@
 
     launchEditor: function(aScript){
       var editor = this.editor;
+
       var UI = Components.classes['@mozilla.org/intl/scriptableunicodeconverter'].createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
 
       var platform = window.navigator.platform.toLowerCase();
@@ -476,8 +480,30 @@
         UI.charset =  'UTF-8';
       }
 
-      var path = Components.classes['@mozilla.org/network/io-service;1'].getService(Components.interfaces.nsIIOService).getProtocolHandler('file').QueryInterface(Components.interfaces.nsIFileProtocolHandler).getFileFromURLSpec(aScript.url).path
+      var path = Services.io.getProtocolHandler('file').QueryInterface(Components.interfaces.nsIFileProtocolHandler).getFileFromURLSpec(aScript.url).path
       path = UI.ConvertFromUnicode(path);
+
+     
+/*
+      function uint8ArrayToByteString(arr) {
+        let str = "";
+        for (let i = 0; i < arr.length; i += 65536) {
+          str += String.fromCharCode.apply(null, arr.subarray(i, i + 65536));
+        }
+        return str;
+      }
+
+      var platform = window.navigator.platform.toLowerCase();
+      let charset;
+      if(platform.indexOf('win') > -1){
+        charset = 'Shift_JIS';
+      }else{
+        charset =  'UTF-8';
+      }
+
+      var path = Services.io.getProtocolHandler('file').QueryInterface(Components.interfaces.nsIFileProtocolHandler).getFileFromURLSpec(aScript.url).path
+      path = uint8ArrayToByteString(new TextEncoder(charset).encode(path));
+*/
 
       var appfile = Components.classes['@mozilla.org/file/local;1'].createInstance(Components.interfaces.nsIFile);
       appfile.initWithPath(editor);
